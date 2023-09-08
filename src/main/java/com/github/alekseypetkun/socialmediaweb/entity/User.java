@@ -1,5 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.entity;
 
+import com.github.alekseypetkun.socialmediaweb.constant.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,11 +47,9 @@ public class User {
     /**
      * Роль пользователя для авторизации
      */
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
-    private Collection<Role> roles;
+    @Column(name = "user_role", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     /**
      * Имя пользователя
