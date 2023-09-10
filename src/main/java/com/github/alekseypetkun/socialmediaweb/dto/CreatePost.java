@@ -9,17 +9,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO вход в систему
+ * ДТО создание поста
  */
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class LoginRequest {
+public class CreatePost {
 
-    @NotEmpty(message = "строка с логином не может быть пустой!")
-    private String username; // логин
-    @NotEmpty(message = "строка с паролем не может быть пустой!")
-    private String password; // пароль
+    @NotEmpty(message = "строка с заголовком не может быть пустой!")
+    private String title; // заголовок поста
+    @NotEmpty(message = "строка с текстом не может быть пустой!")
+    private String content; // содержание поста
 }

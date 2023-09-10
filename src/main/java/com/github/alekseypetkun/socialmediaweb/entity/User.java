@@ -10,9 +10,10 @@ import java.util.Collection;
 /**
  * Сущность пользователь
  */
-@Data
 @Entity
-@Builder(toBuilder = true) // Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
+@Data
+@Builder(toBuilder = true)
+// Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -84,29 +85,29 @@ public class User {
     /**
      * Список постов пользователя
      */
-    @OneToMany(fetch = FetchType.LAZY, //mappedBy = "author",
-            cascade = CascadeType.MERGE, orphanRemoval = true)
-    @JoinColumn(name = "post_id")
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "author",
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Post> posts;
 
     /**
      * Список подписчиков пользователя
      */
-    @OneToMany(fetch = FetchType.LAZY, //mappedBy = "toUserId",
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "toUserId",
             cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "subscriber_id")
     private Collection<Subscriber> subscribers;
 
     /**
      * Список сообщений пользователя
      */
-    @OneToMany(fetch = FetchType.LAZY, //mappedBy = "toUserId",
-            cascade = CascadeType.MERGE, orphanRemoval = true)
-    @JoinColumn(name = "message_id")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "toUserId",
+            cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Message> messages;
 
     @ToString.Include(name = "password") // Строковое представление этого поля будет засекречено
     private String maskPassword() {
         return "*****";
     }
+
+
 }

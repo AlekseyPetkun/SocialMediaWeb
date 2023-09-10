@@ -1,19 +1,17 @@
 package com.github.alekseypetkun.socialmediaweb.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 /**
  * Сущность пост
  */
-@Data
 @Entity
-@Builder(toBuilder = true) // Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
+@Data
+@Builder(toBuilder = true)
+// Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "posts")
@@ -54,7 +52,8 @@ public class Post {
     /**
      * Автор поста
      */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "author_id")
+//    @ToString.Exclude
     private User author;
 }

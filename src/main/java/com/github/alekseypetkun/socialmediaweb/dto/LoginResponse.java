@@ -6,6 +6,9 @@ import lombok.*;
 
 import java.util.Date;
 
+/**
+ * DTO получение токенов
+ */
 @Getter
 @Setter
 @Builder(toBuilder = true)
@@ -14,7 +17,7 @@ import java.util.Date;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class LoginResponse {
 
-    private Long userId;
-    private String accessToken;
-    private String refreshToken;
+    private Long userId; // идентификатор пользователя
+    private String accessToken; // токен для доступа
+    private String refreshToken; // токен для обновления токена для доступа
 }

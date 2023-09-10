@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Entity
-@Builder(toBuilder = true) // Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
+@Builder(toBuilder = true)
+// Генерирует метод toBuilder(), который создает копию объекта класса и позволяет изменять значения полей копии объекта без изменения исходного объекта.
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "messages")
