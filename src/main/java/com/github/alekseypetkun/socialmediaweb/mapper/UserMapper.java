@@ -4,6 +4,7 @@ import com.github.alekseypetkun.socialmediaweb.dto.RegisterRequest;
 import com.github.alekseypetkun.socialmediaweb.dto.UserDto;
 import com.github.alekseypetkun.socialmediaweb.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * Маппинг сущности пользователя
