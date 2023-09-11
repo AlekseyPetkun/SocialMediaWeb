@@ -71,7 +71,7 @@ public class PostServiceImpl implements PostService {
             return updatedPost;
 
         } else {
-            throw new AuthorisationException("user is forbidden", "8082_USER_IS_FORBIDDEN");
+            throw new AuthorisationException("user is forbidden", "8081_USER_IS_FORBIDDEN");
         }
     }
 
