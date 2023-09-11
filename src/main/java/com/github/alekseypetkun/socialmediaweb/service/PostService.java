@@ -76,30 +76,49 @@ public interface PostService {
     boolean updatePostImage(Long postId, MultipartFile image, Long userId);
 
     /**
-     * Поиск постов по названию (заголовку)
-     *
-     * @param pageNumber параметр начальной страницы
-     * @param pageSize   параметр конечной страницы
-     * @param title      название поста (заголовок)
-     * @return список постов
-     */
-    ResponseWrapperPosts findByTitlePost(int pageNumber, int pageSize, String title);
-
-    /**
-     * Поиск постов по содержанию
-     *
-     * @param pageNumber параметр начальной страницы
-     * @param pageSize   параметр конечной страницы
-     * @param content    содержание поста
-     * @return список постов
-     */
-    ResponseWrapperPosts findByContentPost(int pageNumber, int pageSize, String content);
-
-    /**
      * Поиск поста по его идентификатору
      *
      * @param postId идентификатор пота
      * @return найденный пост
      */
     Post findPostById(Long postId);
+
+    /**
+     * Получить все сохраненные посты
+     *
+     * @param pageNumber параметр начальной страницы
+     * @param pageSize   параметр конечной страницы
+     * @return список постов
+     */
+    ResponseWrapperPosts getAllPosts(int pageNumber, int pageSize);
+
+    /**
+     * Поиск постов по названию и/или по содержанию
+     *
+     * @param pageNumber параметр начальной страницы
+     * @param pageSize   параметр конечной страницы
+     * @param dto        название и/или содержание
+     * @return список постов
+     */
+    ResponseWrapperPosts searchPosts(int pageNumber, int pageSize, SearchPost dto);
+
+//    /**
+     //     * Поиск постов по названию (заголовку)
+     //     *
+     //     * @param pageNumber параметр начальной страницы
+     //     * @param pageSize   параметр конечной страницы
+     //     * @param title      название поста (заголовок)
+     //     * @return список постов
+     //     */
+//    ResponseWrapperPosts findByTitlePost(int pageNumber, int pageSize, String title);
+//
+//    /**
+//     * Поиск постов по содержанию
+//     *
+//     * @param pageNumber параметр начальной страницы
+//     * @param pageSize   параметр конечной страницы
+//     * @param content    содержание поста
+//     * @return список постов
+//     */
+//    ResponseWrapperPosts findByContentPost(int pageNumber, int pageSize, String content);
 }
