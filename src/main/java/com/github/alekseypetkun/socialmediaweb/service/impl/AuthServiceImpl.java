@@ -56,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEnabled(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUsername(dto.getEmail());
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.USER);
         user.setCreatedAt(localDateTime);
         user.setUpdatedAt(localDateTime);
 
@@ -162,6 +162,13 @@ public class AuthServiceImpl implements AuthService {
     public boolean checkAccess(Post post, User user) {
 
         return post.getAuthor().equals(user)
+                || user.getRole() == Role.ADMIN;
+    }
+
+    @Override
+    public boolean checkAccess(User user) {
+
+        return user.isEnabled()
                 || user.getRole() == Role.ADMIN;
     }
 }

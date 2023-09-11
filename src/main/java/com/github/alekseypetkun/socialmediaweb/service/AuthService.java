@@ -27,6 +27,8 @@ public interface AuthService {
 
     boolean checkAccess(Post post, User user);
 
+    boolean checkAccess(User user);
+
 //    LoginResponse authenticate(String username, String password);
 //
 //    /**
