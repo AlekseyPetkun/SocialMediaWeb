@@ -20,4 +20,12 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
      * @return список подписок
      */
     List<Subscriber> findAllByFromUserId(User fromUserId);
+
+    /**
+     * Получить список подписчиков пользователя
+     *
+     * @param toUserId пользователь
+     * @return список подписчиков
+     */
+    List<Subscriber> findAllByToUserId(User toUserId);
 }
