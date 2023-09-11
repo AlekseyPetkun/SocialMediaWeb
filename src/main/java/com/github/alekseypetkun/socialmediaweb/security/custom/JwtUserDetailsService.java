@@ -21,7 +21,7 @@ public class JwtUserDetailsService implements CustomUserDetailsService {
         User user = userRepository.findByUsername(username);
 
         if (user == null) {
-            throw new NotFoundUserException("User with username: " + username + " not found");
+            throw new NotFoundUserException(username);
         }
 
         JwtUser jwtUser = new JwtUser(user);
@@ -33,7 +33,7 @@ public class JwtUserDetailsService implements CustomUserDetailsService {
     public UserDetails loadUserById(Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundUserException("User with userId: " + userId + " not found"));
+                .orElseThrow(() -> new NotFoundUserException(userId));
 
         JwtUser jwtUser = new JwtUser(user);
         log.info("IN loadUserByUsername - user with userId: {} successfully loaded", userId);

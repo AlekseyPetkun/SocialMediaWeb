@@ -1,6 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.security.jwt;
 
-import com.github.alekseypetkun.socialmediaweb.dto.JwtUser;
+import com.github.alekseypetkun.socialmediaweb.dto.JwtUserDto;
 import lombok.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,7 +32,7 @@ public class JwtAuthentication implements Authentication {
 
     @Override
     public Object getPrincipal() {
-        return new JwtUser(userId); // Возвращаем объект с userId;
+        return new JwtUserDto(userId); // Возвращаем объект с userId;
     }
 
     @Override
