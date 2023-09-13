@@ -10,6 +10,6 @@ public class NotFoundPostException extends NotFoundException{
 
     @Override
     public String getMessage() {
-        return String.format("Пост с id: s% не найден!", id);
+        return String.format("Пост с id: " + id + " не найден!");
     }
 }
