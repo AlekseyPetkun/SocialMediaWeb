@@ -27,8 +27,6 @@ public class SecurityConfig {
             "/api/auth/refresh",
             "/api/auth/register",
             "/api/posts",
-            "/api/posts/found_posts/by_content",
-            "/api/posts/found_posts/by_title",
             "/api/posts/search_posts",
             "/api/posts/image/*"
     };
