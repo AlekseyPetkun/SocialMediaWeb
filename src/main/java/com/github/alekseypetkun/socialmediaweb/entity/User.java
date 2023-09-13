@@ -93,6 +93,7 @@ public class User {
     /**
      * Список подписчиков пользователя
      */
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "toUserId",
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Subscriber> subscribers;
@@ -100,6 +101,7 @@ public class User {
     /**
      * Список сообщений пользователя
      */
+    @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "toUserId",
             cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Message> messages;

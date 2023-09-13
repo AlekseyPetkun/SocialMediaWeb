@@ -1,13 +1,14 @@
 package com.github.alekseypetkun.socialmediaweb.service.impl;
 
 import com.github.alekseypetkun.socialmediaweb.constant.Role;
+import com.github.alekseypetkun.socialmediaweb.entity.Post;
 import com.github.alekseypetkun.socialmediaweb.security.jwt.JwtAuthentication;
 import com.github.alekseypetkun.socialmediaweb.dto.LoginRequest;
 import com.github.alekseypetkun.socialmediaweb.dto.LoginResponse;
 import com.github.alekseypetkun.socialmediaweb.dto.RegisterRequest;
 import com.github.alekseypetkun.socialmediaweb.dto.UserDto;
 import com.github.alekseypetkun.socialmediaweb.entity.User;
-import com.github.alekseypetkun.socialmediaweb.exception.AuthException;
+import com.github.alekseypetkun.socialmediaweb.exception.AuthenticationException;
 import com.github.alekseypetkun.socialmediaweb.mapper.UserMapper;
 import com.github.alekseypetkun.socialmediaweb.repository.UserRepository;
 import com.github.alekseypetkun.socialmediaweb.security.jwt.JwtProvider;
@@ -16,8 +17,11 @@ import com.github.alekseypetkun.socialmediaweb.security.custom.CustomUserDetails
 import com.github.alekseypetkun.socialmediaweb.security.custom.CustomUserDetailsService;
 import com.github.alekseypetkun.socialmediaweb.service.AuthService;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -49,22 +53,20 @@ public class AuthServiceImpl implements AuthService {
     public UserDto registerUser(RegisterRequest dto) {
 
         User user = userMapper.map(dto);
+        user.setEnabled(true);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setUsername(dto.getEmail());
+        user.setRole(Role.USER);
+        user.setCreatedAt(localDateTime);
+        user.setUpdatedAt(localDateTime);
 
-        userRepository.save(user.toBuilder()
-                .password(passwordEncoder.encode(user.getPassword()))
-                .username(dto.getEmail())
-                .role(Role.USER)
-                .enabled(true)
-                .createdAt(localDateTime)
-                .updatedAt(localDateTime)
-                .build());
-
-        log.info("IN registerUser - user: {} created", userMapper.map(user));
-        return userMapper.map(user);
+        UserDto newUser = userMapper.map(userRepository.save(user));
+        log.info("IN registerUser - user: {} created", user);
+        return newUser;
     }
 
     @Override
-    public LoginResponse login(LoginRequest authRequest) throws AuthException {
+    public LoginResponse login(LoginRequest authRequest) throws AuthenticationException {
 
         return checkToken(authRequest.getUsername(),
                 authRequest.getPassword());
@@ -83,15 +85,15 @@ public class AuthServiceImpl implements AuthService {
                 .loadUserByUsername(username);
 
         if (user == null) {
-            throw new AuthException("Invalid username", "8082_INVALID_USERNAME");
+            throw new AuthenticationException("Invalid username", "8082_INVALID_USERNAME");
         }
 
         if (!user.isEnabled()) {
-            throw new AuthException("Account disabled", "8082_USER_ACCOUNT_DISABLED");
+            throw new AuthenticationException("Account disabled", "8082_USER_ACCOUNT_DISABLED");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new AuthException("Invalid password", "8082_INVALID_PASSWORD");
+            throw new AuthenticationException("Invalid password", "8082_INVALID_PASSWORD");
         }
 
         final String accessToken = jwtProvider.generateAccessToken(user);
@@ -128,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse getNewRefreshToken(String refreshToken) throws AuthException {
+    public LoginResponse getNewRefreshToken(String refreshToken) throws AuthenticationException {
 
         if (jwtProvider.validateRefreshToken(refreshToken)) {
 
@@ -147,12 +149,26 @@ public class AuthServiceImpl implements AuthService {
                 return new LoginResponse(user.getUserById(), accessToken, newRefreshToken);
             }
         }
-        throw new AuthException("Invalid jwt token", "8082_INVALID_JWT_TOKEN");
+        throw new AuthenticationException("Invalid jwt token", "8082_INVALID_JWT_TOKEN");
     }
 
     @Override
     public JwtAuthentication getAuthInfo() {
 
         return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    @Override
+    public boolean checkAccess(Post post, User user) {
+
+        return post.getAuthor().equals(user)
+                || user.getRole() == Role.ADMIN;
+    }
+
+    @Override
+    public boolean checkAccess(User user) {
+
+        return user.isEnabled()
+                || user.getRole() == Role.ADMIN;
     }
 }

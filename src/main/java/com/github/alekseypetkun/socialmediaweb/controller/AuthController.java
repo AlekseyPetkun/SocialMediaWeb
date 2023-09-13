@@ -1,10 +1,10 @@
 package com.github.alekseypetkun.socialmediaweb.controller;
 
-import com.github.alekseypetkun.socialmediaweb.security.jwt.JwtAuthentication;
 import com.github.alekseypetkun.socialmediaweb.dto.LoginRequest;
 import com.github.alekseypetkun.socialmediaweb.dto.LoginResponse;
 import com.github.alekseypetkun.socialmediaweb.dto.RegisterRequest;
 import com.github.alekseypetkun.socialmediaweb.dto.UserDto;
+import com.github.alekseypetkun.socialmediaweb.security.jwt.RefreshJwtRequest;
 import com.github.alekseypetkun.socialmediaweb.service.AuthService;
 import com.github.alekseypetkun.socialmediaweb.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,13 +19,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Контроллер по работе с авторизациями и регистрациями.
+ * Контроллер по работе с авторизацией и регистрацией.
  */
 @Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
-@Tag(name = "API по работе с авторизациями и регистрациями")
+@Tag(name = "API по работе с авторизацией и регистрацией")
 public class AuthController {
 
     private final AuthService authService;
@@ -108,11 +108,19 @@ public class AuthController {
     )
     public UserDto getUserInfo() {
 
-        return userService.getUserById(getAuthenticatedUserId());
+        Long userId = userService.getAuthenticatedUserId();
+        return userService.getUserById(userId);
     }
 
-    private Long getAuthenticatedUserId() {
-        JwtAuthentication authInfo = authService.getAuthInfo();
-        return Long.valueOf(authInfo.getName());
+    @PostMapping("/token")
+    public LoginResponse getNewAccessToken(@RequestBody @Valid RefreshJwtRequest request) {
+
+        return authService.getAccessToken(request.getRefreshToken());
+    }
+
+    @PostMapping("/refresh")
+    public LoginResponse getNewRefreshToken(@RequestBody @Valid RefreshJwtRequest request) {
+
+        return authService.getNewRefreshToken(request.getRefreshToken());
     }
 }
