@@ -1,14 +1,17 @@
 package com.github.alekseypetkun.socialmediaweb.service;
 
+import com.github.alekseypetkun.socialmediaweb.dto.ResponseWrapperSubscribers;
+import com.github.alekseypetkun.socialmediaweb.dto.ResponseWrapperUsers;
+import com.github.alekseypetkun.socialmediaweb.dto.UpdateUserDto;
 import com.github.alekseypetkun.socialmediaweb.dto.UserDto;
 import com.github.alekseypetkun.socialmediaweb.entity.User;
-import lombok.NonNull;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Optional;
-
+/**
+ * Сервис по работе с пользователями
+ */
 public interface UserService {
-
-    User getByLogin(@NonNull String login);
 
     /**
      * Получить пользователя по id
@@ -19,10 +22,27 @@ public interface UserService {
     UserDto getUserById(Long id);
 
     /**
-     * Получить пользователя по его логину
+     * Получить id аутентифицированного пользователя
      *
-     * @param username логин пользователя
+     * @return идентификатор аутентифицированного пользователя
+     */
+    Long getAuthenticatedUserId();
+
+    /**
+     * Поиск пользователя по его идентификатору
+     *
+     * @param userId идентификатор пользователя
      * @return найденный пользователь
      */
-    UserDto getUserByUsername(String username);
+    User findUserById(Long userId);
+
+    UserDto updateUser(UpdateUserDto dto, Long userId);
+
+    ResponseWrapperSubscribers getAllSubscribers(int pageNumber, int pageSize, Long userId);
+
+    ResponseWrapperUsers getAllUsers(int pageNumber, int pageSize);
+
+    void makeFriendsById(Long fromUserId, Long toUserId);
+    void unsubscribeById(Long fromUserId, Long toUserId);
+    void subscribeById(Long fromUserId, Long toUserId);
 }

@@ -1,10 +1,10 @@
 package com.github.alekseypetkun.socialmediaweb.exception;
 
-public class AuthException extends RuntimeException{
+public class AuthorisationException extends RuntimeException{
 
     protected String errorCode;
 
-    public AuthException(String message, String errorCode) {
+    public AuthorisationException(String message, String errorCode) {
         super(message);
         this.errorCode = errorCode;
     }

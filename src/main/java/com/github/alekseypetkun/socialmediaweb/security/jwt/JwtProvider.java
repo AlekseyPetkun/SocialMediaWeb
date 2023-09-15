@@ -38,7 +38,7 @@ public class JwtProvider {
             put("role", user.getUserByRole());
             put("username", user.getUsername());
         }};
-        return generateAccessToken(claims, user.getUserById().toString());
+        return generateAccessToken(claims, String.valueOf(user.getUserById()));
     }
 
     public String generateAccessToken(Map<String, Object> claims, String subject) {
@@ -54,9 +54,9 @@ public class JwtProvider {
     public String generateAccessToken(Date expirationDate, Map<String, Object> claims, String subject) {
 
         return Jwts.builder()
-                .setSubject(subject)
                 .setClaims(claims)
                 .setIssuer(issuer)
+                .setSubject(subject)
                 .setExpiration(expirationDate)
                 .setId(UUID.randomUUID().toString()) // рандомный id токена
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret))) // Подпись токена

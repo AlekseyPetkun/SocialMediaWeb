@@ -5,6 +5,7 @@ import com.github.alekseypetkun.socialmediaweb.security.filter.JwtFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,7 +23,12 @@ public class SecurityConfig {
             "/v3/api-docs",
             "/webjars/**",
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/token",
+            "/api/auth/refresh",
+            "/api/auth/register",
+            "/api/posts",
+            "/api/posts/search_posts",
+            "/api/posts/image/*"
     };
 
     @Bean
@@ -36,6 +42,7 @@ public class SecurityConfig {
                         {
                             authorization
                                     .requestMatchers(AUTH_WHITELIST).permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/posts").permitAll()
                                     .anyRequest().authenticated()
                                     .and()
                                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

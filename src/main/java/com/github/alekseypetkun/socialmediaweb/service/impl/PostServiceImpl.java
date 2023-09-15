@@ -15,14 +15,15 @@ import com.github.alekseypetkun.socialmediaweb.service.PostService;
 import com.github.alekseypetkun.socialmediaweb.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Бизнес-логика по работе с постами
@@ -73,7 +74,7 @@ public class PostServiceImpl implements PostService {
             return updatedPost;
 
         } else {
-            throw new AuthorisationException("user is forbidden", "8082_USER_IS_FORBIDDEN");
+            throw new AuthorisationException("user is forbidden", "8081_USER_IS_FORBIDDEN");
         }
     }
 
@@ -167,43 +168,86 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public ResponseWrapperPosts findByTitlePost(int pageNumber, int pageSize, String title) {
-
-        List<PostDto> dtoList = new ArrayList<>(postRepository
-                .findAllByTitleContainingIgnoreCase(title).stream()
-                .map(postMapper::mapToPostDto)
-                .toList());
-
-        List<PostDto> dtoResult = dtoList.stream()
-                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
-                .skip(pageNumber)
-                .limit(pageSize)
-                .toList();
-
-        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
-    }
-
-    @Override
-    public ResponseWrapperPosts findByContentPost(int pageNumber, int pageSize, String content) {
-
-        List<PostDto> dtoList = new ArrayList<>(postRepository
-                .findAllByContentContainingIgnoreCase(content).stream()
-                .map(postMapper::mapToPostDto)
-                .toList());
-
-        List<PostDto> dtoResult = dtoList.stream()
-                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
-                .skip(pageNumber)
-                .limit(pageSize)
-                .toList();
-
-        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
-    }
-
-    @Override
     public Post findPostById(Long postId) {
 
         return postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundPostException(postId));
     }
+
+    @Override
+    public ResponseWrapperPosts getAllPosts(int pageNumber, int pageSize) {
+
+        List<PostDto> dtoList = new ArrayList<>(postRepository
+                .findAll().stream()
+                .map(postMapper::mapToPostDto)
+                .toList());
+
+        List<PostDto> dtoResult = dtoList.stream()
+                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
+                .skip(pageNumber)
+                .limit(pageSize)
+                .toList();
+
+        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
+    }
+
+    @Override
+    public ResponseWrapperPosts searchPosts(int pageNumber, int pageSize, SearchPost dto) {
+
+//        Pageable pageable = PageRequest
+//                .of(pageNumber, pageSize, Sort.by(Sort.Order.desc("dateTimePost")));
+
+        Set<PostDto> dtoList = postRepository
+                .findAllByTitleContainingIgnoreCase(dto.getTitle())
+                .stream()
+                .map(postMapper::mapToPostDto)
+                .filter(value -> dto.getContent() == null
+                        || value.getContent().toLowerCase().contains(dto.getContent().toLowerCase()))
+                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
+                .skip(pageNumber)
+                .limit(pageSize)
+                .collect(Collectors.toSet());
+
+        List<PostDto> dtoResult = dtoList.stream()
+                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
+                .skip(pageNumber)
+                .limit(pageSize)
+                .toList();
+
+        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
+    }
+
+//    @Override
+//    public ResponseWrapperPosts findByTitlePost(int pageNumber, int pageSize, String title) {
+//
+//        List<PostDto> dtoList = new ArrayList<>(postRepository
+//                .findAllByTitleContainingIgnoreCase(title).stream()
+//                .map(postMapper::mapToPostDto)
+//                .toList());
+//
+//        List<PostDto> dtoResult = dtoList.stream()
+//                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
+//                .skip(pageNumber)
+//                .limit(pageSize)
+//                .toList();
+//
+//        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
+//    }
+//
+//    @Override
+//    public ResponseWrapperPosts findByContentPost(int pageNumber, int pageSize, String content) {
+//
+//        List<PostDto> dtoList = new ArrayList<>(postRepository
+//                .findAllByContentContainingIgnoreCase(content).stream()
+//                .map(postMapper::mapToPostDto)
+//                .toList());
+//
+//        List<PostDto> dtoResult = dtoList.stream()
+//                .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
+//                .skip(pageNumber)
+//                .limit(pageSize)
+//                .toList();
+//
+//        return new ResponseWrapperPosts(dtoList.size(), dtoResult);
+//    }
 }

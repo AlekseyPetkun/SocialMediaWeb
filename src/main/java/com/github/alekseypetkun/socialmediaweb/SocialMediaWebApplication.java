@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(
-		title = "SocialMediaApplication"
+		title = "SocialMediaApplication",
+		description = "Веб-приложение по типу социальной сети для обмена информацией"
 ))
 public class SocialMediaWebApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SocialMediaWebApplication.class, args);
 	}
-
 }

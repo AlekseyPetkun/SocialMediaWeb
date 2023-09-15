@@ -1,0 +1,1067 @@
+openapi: 3.0.3
+info:
+  version: '1.0'
+  title: SocialMediaApplication
+  description: Веб-приложение по типу социальной сети для обмена информацией
+servers:
+  - url: http://localhost:8081
+    description: Generated server url
+paths:
+  /api/users/unsubscribe/{toUserId}:
+    post:
+      tags:
+        - API по работе с пользователями
+      summary: Удалить пользователя из друзей по его id
+      operationId: unsubscribeById
+      parameters:
+        - name: toUserId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Пользователь удален из друзей (OK)
+        "401":
+          description: "Пользовательне  удален из друзей, т.к. пользователь не авт\
+            оризован (Unauthorized)"
+  /api/users/subscribe/{toUserId}:
+    post:
+      tags:
+        - API по работе с пользователями
+      summary: Подписаться на пользователя по его id
+      operationId: subscribeById
+      parameters:
+        - name: toUserId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Заявка отправлена (OK)
+        "401":
+          description: "Заявка не отправлена, т.к. пользователь не авторизован (Unauthorized)"
+  /api/users/make_friends/{toUserId}:
+    post:
+      tags:
+        - API по работе с пользователями
+      summary: Принять заявку в друзья по id подписчика
+      operationId: makeFriendsById
+      parameters:
+        - name: toUserId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Заявка принята (OK)
+        "401":
+          description: "Заявка не принята, т.к. пользователь не авторизован (Unauthorized)"
+  /api/posts:
+    get:
+      tags:
+        - API по работе с постами
+      summary: Получить все сохраненные посты
+      operationId: getAllPosts
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Получен список постов (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "404":
+          description: Список постов не получен (Not Found)
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+    post:
+      tags:
+        - API по работе с постами
+      summary: Добавить новый пост
+      description: Нужно заполнить параметры для создания поста
+      operationId: addAd
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - dto
+                - image
+              type: object
+              properties:
+                dto:
+                  $ref: '#/components/schemas/CreatePost'
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Пост был добавлен (Created)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDto'
+        "401":
+          description: "Пост не добавлена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostDto'
+  /api/posts/search_posts:
+    post:
+      tags:
+        - API по работе с постами
+      summary: Поиск постов по содержанию
+      operationId: searchPosts
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchPost'
+        required: true
+      responses:
+        "200":
+          description: Получен список постов (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "404":
+          description: Список постов не получен (Not Found)
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+  /api/messages:
+    post:
+      tags:
+        - API по работе с сообщениями
+      summary: Добавить новое сообщение
+      description: Нужно заполнить параметры для создания сообщения
+      operationId: addMessage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageRequest'
+        required: true
+      responses:
+        "201":
+          description: Сообщение было отправлено (Created)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        "401":
+          description: "Сообщение не отправлено, т.к. пользователь не авторизован\
+            \ (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/auth/token:
+    post:
+      tags:
+        - API по работе с авторизацией и регистрацией
+      operationId: getNewAccessToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshJwtRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /api/auth/register:
+    post:
+      tags:
+        - API по работе с авторизацией и регистрацией
+      summary: Регистрация нового пользователя
+      description: Нужно заполнить параметры для регистрации
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "200":
+          description: Пользователь зарегистрирован (OK)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterRequest'
+        "400":
+          description: "Пользователь не зарегистрирован, т.к. не прошел валидацию\
+            \ (Bad Request)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        "500":
+          description: "Пользователь не зарегистрирован, т.к. такая почта уже суще\
+            ствует (Internal Server Error)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/auth/refresh:
+    post:
+      tags:
+        - API по работе с авторизацией и регистрацией
+      operationId: getNewRefreshToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshJwtRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /api/auth/login:
+    post:
+      tags:
+        - API по работе с авторизацией и регистрацией
+      summary: Авторизация пользователя
+      description: Нужно заполнить параметры для авторизации
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          description: Пользователь авторизирован (OK)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRequest'
+        "403":
+          description: "Пользователь не авторизирован, т.к. ввел неправильные знач\
+            ения (Forbidden)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /api/users/me:
+    patch:
+      tags:
+        - API по работе с пользователями
+      summary: Обновить информацию о пользователе
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDto'
+        required: true
+      responses:
+        "200":
+          description: Информация успешно обновилась (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        "401":
+          description: "Информация не обновилась, т.к. пользователь не авторизован\
+            \ (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        "403":
+          description: "Информация не обновилась, т.к. у пользователя нет прав на\
+            \ это (Forbidden)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+  /api/posts/{postId}:
+    get:
+      tags:
+        - API по работе с постами
+      summary: Получить информацию о посте
+      operationId: getPost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Информация успешно получена (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FullPost'
+        "401":
+          description: "Информация не получена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FullPost'
+    delete:
+      tags:
+        - API по работе с постами
+      summary: Удалить пост
+      operationId: deletePost
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Пост удален (No Content)
+        "401":
+          description: "Пост не удален, т.к. пользователь не авторизован (Unauthorized)"
+        "403":
+          description: "Пост не удален, т.к. у пользователя нет прав на это (Forbidden)"
+    patch:
+      tags:
+        - API по работе с постами
+      summary: Обновить информацию о посте
+      operationId: updatePosts
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePost'
+        required: true
+      responses:
+        "200":
+          description: Информация успешно обновилась (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostDto'
+        "401":
+          description: "Информация не обновилась, т.к. пользователь не авторизован\
+            \ (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostDto'
+        "403":
+          description: "Информация не обновилась, т.к. у пользователя нет прав на\
+            \ это (Forbidden)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostDto'
+        "404":
+          description: "Информация не обновилась, т.к. пост не найден (Not Found)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PostDto'
+  /api/posts/{postId}/image:
+    patch:
+      tags:
+        - API по работе с постами
+      summary: Обновить картинку поста
+      operationId: updatePostImage
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - image
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Картинка успешно обновилась (OK)
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+        "401":
+          description: "Картинка не обновилась, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                type: boolean
+        "403":
+          description: "Картинка не обновилась, т.к. у пользователя нет прав на эт\
+            о (Forbidden)"
+          content:
+            '*/*':
+              schema:
+                type: boolean
+        "404":
+          description: "Картинка не обновилась, т.к. пост не найден (Not Found)"
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /api/users:
+    get:
+      tags:
+        - API по работе с пользователями
+      summary: Получить всех пользователей
+      operationId: getAllUsers
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Получен список пользователей (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "404":
+          description: Список пользователей не получен (Not Found)
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperUsers'
+  /api/users/subscriber:
+    get:
+      tags:
+        - API по работе с пользователями
+      summary: Получить всех подписчиков пользователя
+      operationId: getAllSubscribers
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Получен список подписчиков (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "404":
+          description: Список подписчиков не получен (Not Found)
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperSubscribers'
+  /api/posts/subscriptions:
+    get:
+      tags:
+        - API по работе с постами
+      summary: Получить все посты друзей и подписок
+      operationId: getAllFeeds
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Получен список постов друзей и подписок (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "404":
+          description: Список постов друзей не получен (Not Found)
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+  /api/posts/me:
+    get:
+      tags:
+        - API по работе с постами
+      summary: Получить посты авторизованного пользователя
+      operationId: getPostsMe
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Получен список постов (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+        "401":
+          description: "Список постов не получен, т.к. пользователь не авторизован\
+            \ (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperPosts'
+  /api/posts/image/{id}:
+    get:
+      tags:
+        - API по работе с постами
+      summary: Получить картинку поста
+      operationId: getImage
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Картинка получена (OK)
+          content:
+            image/png:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+            image/jpeg:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+            application/octet-stream:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+        "404":
+          description: Картинка не найдена (Not found)
+  /api/messages/send:
+    get:
+      tags:
+        - API по работе с сообщениями
+      summary: Получить все исходящие сообщения
+      operationId: getAllSendMessages
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Информация успешно получена (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+        "401":
+          description: "Информация не получена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+  /api/messages/send/{toUserId}:
+    get:
+      tags:
+        - API по работе с сообщениями
+      summary: Получить все исходящие сообщения по id получателя
+      operationId: getAllSendMessagesById
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: toUserId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Информация успешно получена (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+        "401":
+          description: "Информация не получена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+  /api/messages/incoming:
+    get:
+      tags:
+        - API по работе с сообщениями
+      summary: Получить все входящие сообщения
+      operationId: getAllIncomingMessages
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+      responses:
+        "200":
+          description: Информация успешно получена (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+        "401":
+          description: "Информация не получена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+  /api/messages/incoming/{fromUserId}:
+    get:
+      tags:
+        - API по работе с сообщениями
+      summary: Получить все входящие сообщения по id отправителя
+      operationId: getAllIncomingMessagesById
+      parameters:
+        - name: page_number
+          in: query
+          required: false
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: fromUserId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Информация успешно получена (Ok)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+        "401":
+          description: "Информация не получена, т.к. пользователь не авторизован (Unauthorized)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ResponseWrapperMessage'
+  /api/auth/info:
+    get:
+      tags:
+        - API по работе с авторизацией и регистрацией
+      summary: Получить информацию о пользователе
+      description: Нужно ввести валидный токен
+      operationId: getUserInfo
+      responses:
+        "200":
+          description: Данные пользователя получены (OK)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        "500":
+          description: "Данные пользователя не получены, т.к. токен не валиден (Internal\
+            \ Server Error)"
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+components:
+  schemas:
+    PostDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+        date_time_post:
+          type: string
+          format: date-time
+        author_post:
+          type: integer
+          format: int64
+    CreatePost:
+      required:
+        - content
+        - title
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    ResponseWrapperPosts:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostDto'
+    SearchPost:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    MessageResponse:
+      type: object
+      properties:
+        message_id:
+          type: integer
+          format: int64
+        to_user:
+          type: integer
+          format: int64
+        from_user:
+          type: integer
+          format: int64
+        text:
+          type: string
+        date_time_message:
+          type: string
+          format: date-time
+        status_message:
+          type: string
+          enum:
+            - READ
+            - UNREAD
+    MessageRequest:
+      required:
+        - text
+        - to_user_id
+      type: object
+      properties:
+        text:
+          type: string
+        to_user_id:
+          type: integer
+          format: int64
+    RefreshJwtRequest:
+      required:
+        - refreshToken
+      type: object
+      properties:
+        refreshToken:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    RegisterRequest:
+      required:
+        - email
+        - first_name
+        - last_name
+        - password
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+        first_name:
+          type: string
+        last_name:
+          type: string
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    LoginRequest:
+      required:
+        - password
+        - username
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    UpdateUserDto:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    UpdatePost:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    FullUser:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+    ResponseWrapperUsers:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FullUser'
+    FullSubscriber:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        subscriberFirstName:
+          type: string
+        subscriberLastName:
+          type: string
+        statusSubscriber:
+          type: string
+          enum:
+            - SUBSCRIPTION
+            - FRIENDS
+    ResponseWrapperSubscribers:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FullSubscriber'
+    FullPost:
+      type: object
+      properties:
+        postId:
+          type: integer
+          format: int64
+        authorFirstName:
+          type: string
+        authorLastName:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+        dateTimePost:
+          type: string
+          format: date-time
+    ResponseWrapperMessage:
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int32
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageResponse'
