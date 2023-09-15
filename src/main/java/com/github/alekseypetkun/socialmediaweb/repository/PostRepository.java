@@ -28,6 +28,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      * @return список постов
      */
     List<Post> findAllByTitleContainingIgnoreCase(String title);
-
-    List<Post> findAllByContentContainingIgnoreCase(String content);
 }
