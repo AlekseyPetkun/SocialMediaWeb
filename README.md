@@ -159,7 +159,7 @@ curl -X 'PATCH' \
 
 ### 6. Документация API:
 
-- API задокументировано с использованием инструментов, таких как Swagger или OpenAPI.
+- API задокументировано с использованием инструментов OpenAPI.
 
 ---
 
@@ -169,7 +169,7 @@ curl -X 'PATCH' \
 
 ## Использован следующий стек технологий: ##
 
-Java17\
+Java 17\
 SpringBoot 3\
 Security\
 JWT tokens\
@@ -182,7 +182,7 @@ Docker\
 Mapstruct\
 OpenAPI
 
-## Структура базы данных: ##
+## Структура базы данных: 
 
 ![2023-06-27_22-09-29](https://github.com/AlekseyPetkun/SocialMediaWeb/blob/master/screens/Схема%20БД.png)
 
