@@ -15,6 +15,9 @@ import com.github.alekseypetkun.socialmediaweb.service.PostService;
 import com.github.alekseypetkun.socialmediaweb.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -191,11 +194,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public ResponseWrapperPosts searchPosts(int pageNumber, int pageSize, SearchPost dto) {
 
+//        Pageable pageable = PageRequest
+//                .of(pageNumber, pageSize, Sort.by(Sort.Order.desc("dateTimePost")));
+
         Set<PostDto> dtoList = postRepository
                 .findAllByTitleContainingIgnoreCase(dto.getTitle())
                 .stream()
                 .map(postMapper::mapToPostDto)
-                .filter(value -> dto.getContent() == null || value.getContent().toLowerCase().contains(dto.getContent().toLowerCase()))
+                .filter(value -> dto.getContent() == null
+                        || value.getContent().toLowerCase().contains(dto.getContent().toLowerCase()))
                 .sorted(Comparator.comparing(PostDto::getDateTimePost).reversed())
                 .skip(pageNumber)
                 .limit(pageSize)

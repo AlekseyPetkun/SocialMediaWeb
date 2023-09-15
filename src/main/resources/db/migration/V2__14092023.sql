@@ -1,0 +1,2 @@
+ALTER TABLE messages
+    ADD status VARCHAR(32) NOT NULL;

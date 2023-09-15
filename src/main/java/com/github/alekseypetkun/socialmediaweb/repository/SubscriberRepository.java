@@ -1,5 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.repository;
 
+import com.github.alekseypetkun.socialmediaweb.constant.StatusSubscriber;
 import com.github.alekseypetkun.socialmediaweb.entity.Subscriber;
 import com.github.alekseypetkun.socialmediaweb.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,4 +29,6 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
      * @return список подписчиков
      */
     List<Subscriber> findAllByToUserId(User toUserId);
+    Subscriber findByFromUserIdAndToUserIdAndStatus(User fromUserId, User toUserId, StatusSubscriber statusSubscriber);
+    Subscriber findByFromUserIdAndToUserId(User fromUserId, User toUserId);
 }

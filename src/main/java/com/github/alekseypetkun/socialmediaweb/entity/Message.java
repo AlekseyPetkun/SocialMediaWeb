@@ -1,5 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.entity;
 
+import com.github.alekseypetkun.socialmediaweb.constant.StatusMessage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,4 +54,11 @@ public class Message {
      */
     @Column(name = "date_time_message")
     private LocalDateTime dateTimeMessage;
+
+    /**
+     * Статус сообщения
+     */
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusMessage status;
 }

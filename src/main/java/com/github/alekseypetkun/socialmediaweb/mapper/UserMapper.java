@@ -1,9 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.mapper;
 
-import com.github.alekseypetkun.socialmediaweb.dto.RegisterRequest;
-import com.github.alekseypetkun.socialmediaweb.dto.UpdatePost;
-import com.github.alekseypetkun.socialmediaweb.dto.UpdateUserDto;
-import com.github.alekseypetkun.socialmediaweb.dto.UserDto;
+import com.github.alekseypetkun.socialmediaweb.dto.*;
 import com.github.alekseypetkun.socialmediaweb.entity.Post;
 import com.github.alekseypetkun.socialmediaweb.entity.User;
 import org.mapstruct.Mapper;
@@ -48,4 +45,15 @@ public interface UserMapper {
     @Mapping(source = "lastName", target = "lastName",
             nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void patch(UpdateUserDto dto, @MappingTarget User entity);
+
+    /**
+     * Преобразует сущность в дто
+     *
+     * @param entity сущность
+     * @return дто
+     */
+    @Mapping(source = "firstName", target = "firstName")
+    @Mapping(source = "lastName", target = "lastName")
+    @Mapping(source = "id", target = "userId")
+    FullUser mapToFullUser(User entity);
 }
