@@ -17,6 +17,9 @@ import com.github.alekseypetkun.socialmediaweb.service.AuthService;
 import com.github.alekseypetkun.socialmediaweb.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -99,17 +102,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseWrapperUsers getAllUsers(int pageNumber, int pageSize) {
 
+        Pageable pageable = PageRequest
+                .of(pageNumber, pageSize, Sort.by(Sort.Order.asc("id")));
+
         List<FullUser> dtoList = new ArrayList<>(userRepository
-                .findAll().stream()
+                .findAll(pageable).stream()
                 .map(userMapper::mapToFullUser)
                 .toList());
 
-        List<FullUser> dtoResult = dtoList.stream()
-                .skip(pageNumber)
-                .limit(pageSize)
-                .toList();
+//        List<FullUser> dtoResult = dtoList.stream()
+//                .skip(pageNumber)
+//                .limit(pageSize)
+//                .toList();
 
-        return new ResponseWrapperUsers(dtoList.size(), dtoResult);
+        return new ResponseWrapperUsers(dtoList.size(), dtoList);
     }
 
     @Override
