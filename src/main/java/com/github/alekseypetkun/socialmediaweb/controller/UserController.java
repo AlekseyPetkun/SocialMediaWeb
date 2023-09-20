@@ -1,8 +1,6 @@
 package com.github.alekseypetkun.socialmediaweb.controller;
 
 import com.github.alekseypetkun.socialmediaweb.dto.*;
-import com.github.alekseypetkun.socialmediaweb.repository.SubscriberRepository;
-import com.github.alekseypetkun.socialmediaweb.repository.UserRepository;
 import com.github.alekseypetkun.socialmediaweb.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,11 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Контроллер для работы с пользователями
@@ -28,8 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "API по работе с пользователями")
 public class UserController {
 
-    private final UserRepository userRepository;
-    private final SubscriberRepository subscriberRepository;
     private final UserService userService;
 
     @PatchMapping("/me")
@@ -71,7 +65,7 @@ public class UserController {
                             description = "Получен список подписчиков (Ok)",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ResponseWrapperPosts.class)
+                                    schema = @Schema(implementation = ResponseWrapperSubscribers.class)
                             )
                     ),
                     @ApiResponse(
@@ -97,7 +91,7 @@ public class UserController {
                             description = "Получен список пользователей (Ok)",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ResponseWrapperPosts.class)
+                                    schema = @Schema(implementation = ResponseWrapperUsers.class)
                             )
                     ),
                     @ApiResponse(
