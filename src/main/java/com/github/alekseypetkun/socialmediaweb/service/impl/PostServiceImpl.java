@@ -89,7 +89,7 @@ public class PostServiceImpl implements PostService {
             postRepository.deleteById(postId);
             log.info("IN deletePost - post: {} deleted", post);
         } else {
-            throw new AuthorisationException("user is forbidden", "8082_USER_IS_FORBIDDEN");
+            throw new AuthorisationException("user is forbidden", "8081_USER_IS_FORBIDDEN");
         }
     }
 
@@ -161,7 +161,7 @@ public class PostServiceImpl implements PostService {
             log.info("IN updatePostImage - post: {} updated", postUpdated);
 
         } else {
-            throw new AuthorisationException("user is forbidden", "8082_USER_IS_FORBIDDEN");
+            throw new AuthorisationException("user is forbidden", "8081_USER_IS_FORBIDDEN");
         }
 
         return false;
